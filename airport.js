@@ -116,7 +116,7 @@ export default async function (ctx) {
 
   // ✅ Egern 原生深浅色配置（自动切换）
   const colors = {
-    bgCard: { light: "#FFFFFFCC", dark: "#2C2C2ECC" },  // 80% 半透明，露出动漫背景
+    bgCard: { light: "#FFFFFF4D", dark: "#2C2C2E4D" },  // 30% 淡淡一层，脸透出来
     bgCardBorder: { light: "#E5E5E7", dark: "#3A3A3C" },
     textPrimary: { light: "#1D1D1F", dark: "#FFFFFF" },
     textSecondary: { light: "#666666", dark: "#EBEBF5" },
