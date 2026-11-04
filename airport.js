@@ -44,7 +44,9 @@
 
 /* doufu 改版 (2026-11-04, based on Aswoth/Keek v3.4.0):
  * - 进度条上加了一只皮卡丘，站在用量对应的位置（跑到哪里 = 用到哪里）
- * - 深色模式用蓝色动漫背景、浅色模式用粉色动漫背景（data URI 内嵌，Egern 只接受 data URI）
+ * - 动漫背景图（data URI 内嵌，Egern 只接受 data URI）；Egern 的 backgroundImage
+ *   不支持深浅色自适应对象（会导致小组件空白），改为单图 + BG 环境变量手动选择：
+ *   BG=dark 用蓝色背景，BG=light（默认）用粉色背景
  * - 其余逻辑（订阅抓取、环境变量、刷新间隔）保持原样
  */
 const PIKACHU = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><ellipse cx='13' cy='11' rx='5' ry='11' fill='%23FFD93B' transform='rotate(-24,13,11)'/><ellipse cx='35' cy='11' rx='5' ry='11' fill='%23FFD93B' transform='rotate(24,35,11)'/><ellipse cx='10.5' cy='4.5' rx='3.2' ry='5' fill='%23262626' transform='rotate(-24,10.5,4.5)'/><ellipse cx='37.5' cy='4.5' rx='3.2' ry='5' fill='%23262626' transform='rotate(24,37.5,4.5)'/><circle cx='24' cy='29' r='15.5' fill='%23FFD93B'/><circle cx='11.5' cy='33' r='3.8' fill='%23E64545'/><circle cx='36.5' cy='33' r='3.8' fill='%23E64545'/><ellipse cx='18.5' cy='27' rx='2.5' ry='3.3' fill='%23262626'/><ellipse cx='29.5' cy='27' rx='2.5' ry='3.3' fill='%23262626'/><circle cx='19.3' cy='26' r='0.9' fill='%23ffffff'/><circle cx='30.3' cy='26' r='0.9' fill='%23ffffff'/><path d='M22.5,34Q24,35.5,25.5,34' stroke='%237A4A00' stroke-width='1.3' fill='none' stroke-linecap='round'/></svg>";
@@ -69,6 +71,9 @@ export default async function (ctx) {
   const refreshTime = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  // 背景图：BG=dark 用蓝色，BG=light（默认）用粉色（Egern 不支持自适应对象写法）
+  const bgImage = String((ctx.env && ctx.env.BG) || "light").toLowerCase() === "dark" ? BG_DARK : BG_LIGHT;
 
   // ✅ Egern 原生深浅色配置（自动切换）
   const colors = {
@@ -106,7 +111,7 @@ export default async function (ctx) {
       padding: 8,
       gap: 1,
       backgroundGradient: bgGradient,
-      backgroundImage: { light: BG_LIGHT, dark: BG_DARK },
+      backgroundImage: bgImage,
       refreshAfter: refreshTime,
       children: [
         {
@@ -227,7 +232,7 @@ export default async function (ctx) {
     type: "widget",
     padding: [10, 12, 8, 12],           // 上下左右均缩小
     backgroundGradient: bgGradient,
-    backgroundImage: { light: BG_LIGHT, dark: BG_DARK },
+    backgroundImage: bgImage,
     refreshAfter: refreshTime,
     children,
   };
